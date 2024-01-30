@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import datetime
 from tkinter import Tk, Canvas, Label
 
 
@@ -11,8 +12,9 @@ class CountDown:
     def start(self, num_seconds: int):
         self.countdown(num_seconds)
 
-    def countdown(self, count):
-        self.canvas.itemconfig(self.label, text=count)
-        if count > 0:
-            print(count)
-            self.window.after(1000, self.countdown, count - 1)
+    def countdown(self, num_seconds):
+        time_format = str(datetime.timedelta(seconds=num_seconds))
+
+        self.canvas.itemconfig(self.label, text=time_format)
+        if num_seconds > 0:
+            self.window.after(1000, self.countdown, num_seconds - 1)
