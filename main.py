@@ -41,7 +41,7 @@ def main():
     timer = CountDown(window=window, canvas=canvas, label=timer_label)
 
     start_button = Button(text='start'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR,
-                          command=timer.start)
+                          command= lambda: timer.start(300))
     start_button.grid(column=0, row=2)
 
     reset_button = Button(text='reset'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR)

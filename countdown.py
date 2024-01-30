@@ -8,8 +8,8 @@ class CountDown:
     canvas: Canvas
     label: int
 
-    def start(self):
-        self.countdown(5)
+    def start(self, num_seconds: int):
+        self.countdown(num_seconds)
 
     def countdown(self, count):
         self.canvas.itemconfig(self.label, text=count)
