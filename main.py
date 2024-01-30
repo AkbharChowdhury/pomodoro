@@ -5,7 +5,7 @@ from tkinter import *
 FONT_NAME = "Courier"
 HEIGHT = 100
 BACKGROUND_COLOUR = Colours.YELLOW.value
-
+CHECK_MARK = '✔'
 
 # ---------------------------- TIMER RESET ------------------------------- #
 
@@ -31,8 +31,10 @@ def main():
     start_button.grid(column=0, row=2)
 
     reset_button = Button(text='reset'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR)
-
     reset_button.grid(column=2, row=2)
+
+    check_marks = Label(text=CHECK_MARK, fg=Colours.GREEN.value, bg=BACKGROUND_COLOUR)
+    check_marks.grid(row=3, column=1)
     window.mainloop()
 
 
