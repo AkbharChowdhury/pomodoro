@@ -31,17 +31,22 @@ def main():
     window.config(padx=HEIGHT, pady=50, bg=BACKGROUND_COLOUR)
     title_label = Label(text='timer'.capitalize(), fg=Colours.GREEN.value, font=(FONT_NAME, 50),
                         bg=BACKGROUND_COLOUR)
+    # canvas.itemconfig()
+
     title_label.grid(row=0, column=1)
+
     canvas = Canvas(width=200, height=224, bg=BACKGROUND_COLOUR, highlightthickness=0)
     tomato_image = PhotoImage(file='tomato.png')
     canvas.create_image(HEIGHT, 112, image=tomato_image)
     timer_label = canvas.create_text(HEIGHT, 130, text='00:00', font=(FONT_NAME, 35, 'bold'), fill='white')
 
+    # timer_label.config(text="Break", fg=Colours.RED.value)
+
     canvas.grid(column=1, row=1)
-    timer = CountDown(window=window, canvas=canvas, label=timer_label)
+    timer = CountDown(window=window, canvas=canvas, timer_label=timer_label, title_label = title_label)
 
     start_button = Button(text='start'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR,
-                          command= lambda: timer.start(300))
+                          command=timer.start)
     start_button.grid(column=0, row=2)
 
     reset_button = Button(text='reset'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR)
