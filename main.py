@@ -38,8 +38,10 @@ def main():
     timer_label = canvas.create_text(HEIGHT, 130, text='00:00', font=(FONT_NAME, 35, 'bold'), fill='white')
 
     canvas.grid(column=1, row=1)
+    timer = CountDown(window=window, canvas=canvas, label=timer_label)
 
-    start_button = Button(text='start'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR)
+    start_button = Button(text='start'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR,
+                          command=timer.start)
     start_button.grid(column=0, row=2)
 
     reset_button = Button(text='reset'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR)
@@ -48,9 +50,6 @@ def main():
     check_marks = Label(text=CHECK_MARK, fg=Colours.GREEN.value, bg=BACKGROUND_COLOUR)
     check_marks.grid(row=3, column=1)
     window.resizable(False, False)
-
-    t = CountDown(window=window, canvas=canvas, label=timer_label)
-    t.countdown(5)
 
     window.mainloop()
 

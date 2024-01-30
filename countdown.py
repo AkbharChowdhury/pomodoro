@@ -8,6 +8,9 @@ class CountDown:
     canvas: Canvas
     label: int
 
+    def start(self):
+        self.countdown(5)
+
     def countdown(self, count):
         self.canvas.itemconfig(self.label, text=count)
         if count > 0:
