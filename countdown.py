@@ -3,8 +3,10 @@ from dataclasses import dataclass
 import datetime
 from tkinter import Tk, Canvas, Label
 
+from Reps import Reps
 from colour import Colours
 from schedule import Schedule
+from symbol import Symbol
 
 
 @dataclass()
@@ -15,40 +17,31 @@ class CountDown:
     title_label: Label
     check_mark_label: Label
 
-    reps: int = 0
-    CHECK_MARK = '✔'
     timer = None
+    __reps: Reps = Reps()
 
     def reset(self):
         self.window.after_cancel(self.timer)
         self.canvas.itemconfig(self.timer_label, text='00:00')
         self.__change_title_text('timer', Colours.GREEN.value)
         self.check_mark_label.config(text='')
-        self.reps = 0
+        self.__reps.reset_reps()
 
     def __change_title_text(self, title: str, colour: str):
         self.title_label.config(text=title.capitalize(), fg=colour)
 
     def start(self):
-        self.reps += 1
+        self.__reps.increment_reps()
         self.__render_interface()
 
     def __render_interface(self):
-        sessions = dict(
-            work_sec=CountDown.as_seconds(Schedule.WORK_MIN),
-            short_break_sec=CountDown.as_seconds(Schedule.SHORT_BREAK_MIN),
-            long_break_sec=CountDown.as_seconds(Schedule.LONG_BREAK_MIN)
-        )
-
-        is_long_break = self.reps % 8 == 0
-        is_short_break = self.reps % 2 == 0
-
-        if is_long_break:
+        sessions = CountDown.__get_sessions()
+        if self.__reps.calculate_reps() == Schedule.LONG_BREAK_MIN:
             self.__change_title_text('long break', Colours.RED.value)
             self.countdown(sessions['long_break_sec'])
             return
 
-        if is_short_break:
+        if self.__reps.calculate_reps() == Schedule.SHORT_BREAK_MIN:
             self.__change_title_text('short break', Colours.PINK.value)
             self.countdown(sessions['short_break_sec'])
             return
@@ -66,10 +59,21 @@ class CountDown:
         self.check_mark_label.config(text=self.__marks())
 
     def __marks(self):
-        work_sessions = int(math.floor(self.reps / 2))
-        marks = [CountDown.CHECK_MARK for _ in range(work_sessions)]
+        """
+        After every 2 reps a check mark is added
+        """
+        work_sessions = int(math.floor(self.__reps.reps / 2))
+        marks = [Symbol.CHECK_MARK.value for _ in range(work_sessions)]
         return "".join(marks)
 
     @staticmethod
-    def as_seconds(work_type: Schedule):
+    def __as_seconds(work_type: Schedule):
         return work_type.value * 60
+
+    @staticmethod
+    def __get_sessions():
+        return dict(
+            work_sec=CountDown.__as_seconds(Schedule.WORK_MIN),
+            short_break_sec=CountDown.__as_seconds(Schedule.SHORT_BREAK_MIN),
+            long_break_sec=CountDown.__as_seconds(Schedule.LONG_BREAK_MIN)
+        )
