@@ -22,11 +22,11 @@ class CountDown:
     def reset(self):
         self.window.after_cancel(self.timer)
         self.canvas.itemconfig(self.timer_label, text='00:00')
-        self.title_label.config(text='timer'.capitalize())
+        self.__change_title_text('timer', Colours.GREEN.value)
         self.check_mark_label.config(text='')
         self.reps = 0
 
-    def __change_text(self, title: str, colour: str):
+    def __change_title_text(self, title: str, colour: str):
         self.title_label.config(text=title.capitalize(), fg=colour)
 
     def start(self):
@@ -40,16 +40,16 @@ class CountDown:
         is_short_break = self.reps % 2 == 0
 
         if is_long_break:
-            self.__change_text('long break', Colours.RED.value)
+            self.__change_title_text('long break', Colours.RED.value)
             self.countdown(long_break_sec)
             return
 
         if is_short_break:
-            self.__change_text('short break', Colours.PINK.value)
+            self.__change_title_text('short break', Colours.PINK.value)
             self.countdown(short_break_sec)
             return
 
-        self.__change_text('work', Colours.GREEN.value)
+        self.__change_title_text('work', Colours.GREEN.value)
         self.countdown(work_sec)
 
     def countdown(self, num_seconds):
@@ -59,9 +59,10 @@ class CountDown:
             self.timer = self.window.after(1000, self.countdown, num_seconds - 1)
         else:
             self.start()
-            self.check_mark_label.config(text=self.marks())
+            self.check_mark_label.config(text=self.__marks())
+            print(self.__marks())
 
-    def marks(self):
+    def __marks(self):
         work_sessions = int(math.floor(self.reps / 2))
         marks = [CountDown.CHECK_MARK for _ in range(work_sessions)]
         return "".join(marks)
