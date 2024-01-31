@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 import datetime
 from tkinter import Tk, Canvas, Label
@@ -6,52 +7,65 @@ from colour import Colours
 from schedule import Schedule
 
 
-@dataclass(frozen=False, slots=True)
+@dataclass()
 class CountDown:
     window: Tk
     canvas: Canvas
     timer_label: int
     title_label: Label
-    reps: int = 0
+    check_mark_label: Label
 
-    def change_text(self, title: str, colour: str = Colours.GREEN.value):
-        self.title_label.config(text=title.capitalize(), fg=colour, font=("Courier", 50),
-                                bg=Colours.YELLOW.value)
+    reps: int = 0
+    CHECK_MARK = '✔'
+    timer = None
+
+    def reset(self):
+        self.window.after_cancel(self.timer)
+        self.canvas.itemconfig(self.timer_label, text='00:00')
+        self.title_label.config(text='timer'.capitalize())
+        self.check_mark_label.config(text='')
+        self.reps = 0
+
+    def __change_text(self, title: str, colour: str):
+        self.title_label.config(text=title.capitalize(), fg=colour)
 
     def start(self):
-        # reps = self.reps
         self.reps += 1
-        work_sec = self.__as_seconds(Schedule.WORK_MIN)
-        short_break_sec = self.__as_seconds(Schedule.SHORT_BREAK_MIN)
-        long_break_sec = self.__as_seconds(Schedule.LONG_BREAK_MIN)
+
+        work_sec = CountDown.as_seconds(Schedule.WORK_MIN)
+        short_break_sec = CountDown.as_seconds(Schedule.SHORT_BREAK_MIN)
+        long_break_sec = CountDown.as_seconds(Schedule.LONG_BREAK_MIN)
 
         is_long_break = self.reps % 8 == 0
         is_short_break = self.reps % 2 == 0
 
-
-        self.countdown(work_sec)
-
         if is_long_break:
+            self.__change_text('long break', Colours.RED.value)
             self.countdown(long_break_sec)
-            self.change_text('long break', Colours.RED.value)
+            return
 
-        elif is_short_break:
+        if is_short_break:
+            self.__change_text('short break', Colours.PINK.value)
             self.countdown(short_break_sec)
-            # self.change_text('short break', Colours.PINK.value)
+            return
 
-        else:
-            self.countdown(work_sec)
-            # self.change_text('work')
+        self.__change_text('work', Colours.GREEN.value)
+        self.countdown(work_sec)
 
     def countdown(self, num_seconds):
         time_format = str(datetime.timedelta(seconds=num_seconds))
-
         self.canvas.itemconfig(self.timer_label, text=time_format)
         if num_seconds > 0:
-            self.window.after(1000, self.countdown, num_seconds - 1)
+            self.timer = self.window.after(1000, self.countdown, num_seconds - 1)
         else:
             self.start()
+            self.check_mark_label.config(text=self.marks())
+
+    def marks(self):
+        work_sessions = int(math.floor(self.reps / 2))
+        marks = [CountDown.CHECK_MARK for _ in range(work_sessions)]
+        return "".join(marks)
 
     @staticmethod
-    def __as_seconds(work_type: Schedule):
+    def as_seconds(work_type: Schedule):
         return work_type.value * 60

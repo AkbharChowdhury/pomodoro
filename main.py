@@ -43,24 +43,27 @@ def main():
     # timer_label.config(text="Break", fg=Colours.RED.value)
 
     canvas.grid(column=1, row=1)
-    timer = CountDown(window=window, canvas=canvas, timer_label=timer_label, title_label = title_label)
 
     start_button = Button(text='start'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR,
-                          command=timer.start)
-    start_button.grid(column=0, row=2)
+                          command=lambda: timer.start())
 
-    reset_button = Button(text='reset'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR)
+    reset_button = Button(text='reset'.capitalize(), highlightthickness=0, highlightbackground=BACKGROUND_COLOUR, command=lambda: timer.reset())
     reset_button.grid(column=2, row=2)
 
     check_marks = Label(text=CHECK_MARK, fg=Colours.GREEN.value, bg=BACKGROUND_COLOUR)
     check_marks.grid(row=3, column=1)
-    window.resizable(False, False)
 
+    start_button.grid(column=0, row=2)
+    timer = CountDown(window=window,
+                      canvas=canvas,
+                      timer_label=timer_label,
+                      title_label=title_label,
+                      check_mark_label=check_marks)
+
+    window.resizable(False, False)
     window.mainloop()
 
 
 if __name__ == '__main__':
     main()
     import datetime
-
-
