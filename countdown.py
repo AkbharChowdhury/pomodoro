@@ -31,36 +31,39 @@ class CountDown:
 
     def start(self):
         self.reps += 1
+        self.__render_interface()
 
-        work_sec = CountDown.as_seconds(Schedule.WORK_MIN)
-        short_break_sec = CountDown.as_seconds(Schedule.SHORT_BREAK_MIN)
-        long_break_sec = CountDown.as_seconds(Schedule.LONG_BREAK_MIN)
+    def __render_interface(self):
+        sessions = dict(
+            work_sec=CountDown.as_seconds(Schedule.WORK_MIN),
+            short_break_sec=CountDown.as_seconds(Schedule.SHORT_BREAK_MIN),
+            long_break_sec=CountDown.as_seconds(Schedule.LONG_BREAK_MIN)
+        )
 
         is_long_break = self.reps % 8 == 0
         is_short_break = self.reps % 2 == 0
 
         if is_long_break:
             self.__change_title_text('long break', Colours.RED.value)
-            self.countdown(long_break_sec)
+            self.countdown(sessions['long_break_sec'])
             return
 
         if is_short_break:
             self.__change_title_text('short break', Colours.PINK.value)
-            self.countdown(short_break_sec)
+            self.countdown(sessions['short_break_sec'])
             return
 
         self.__change_title_text('work', Colours.GREEN.value)
-        self.countdown(work_sec)
+        self.countdown(sessions['work_sec'])
 
     def countdown(self, num_seconds):
         time_format = str(datetime.timedelta(seconds=num_seconds))
         self.canvas.itemconfig(self.timer_label, text=time_format)
         if num_seconds > 0:
             self.timer = self.window.after(1000, self.countdown, num_seconds - 1)
-        else:
-            self.start()
-            self.check_mark_label.config(text=self.__marks())
-            print(self.__marks())
+            return
+        self.start()
+        self.check_mark_label.config(text=self.__marks())
 
     def __marks(self):
         work_sessions = int(math.floor(self.reps / 2))
